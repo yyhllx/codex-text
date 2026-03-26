@@ -30,6 +30,31 @@ pip install -r requirements.txt
 python -m apkdiff.compare old.apk new.apk -o report.json
 ```
 
+
+## 手机/云端一键跑（GitHub Actions）
+
+仓库内已提供工作流：`.github/workflows/apkdiff.yml`。  
+你可以在手机端直接上传 APK 到仓库再点按钮运行，不需要在 Termux 编译依赖。
+
+### 方式 A：直接上传文件（推荐）
+
+1. 在仓库里创建 `input/` 目录，上传两个文件：
+   - `input/old.apk`
+   - `input/new.apk`
+2. 进入 GitHub → **Actions** → **APK Diff** → **Run workflow**
+3. 保持默认路径（`input/old.apk`、`input/new.apk`）直接运行
+4. 运行完成后在 Artifacts 下载 `apkdiff-report`（内含 `report.json`）
+
+### 方式 B：填下载链接
+
+在运行工作流时同时填写：
+- `old_apk_url`
+- `new_apk_url`
+
+工作流会优先按链接下载并对比。
+
+
+
 执行后会生成 `report.json`，包含：
 
 - `inputs.before` / `inputs.after`：两个 APK 的完整快照

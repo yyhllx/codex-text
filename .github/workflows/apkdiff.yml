@@ -1,0 +1,70 @@
+name: APK Diff
+
+on:
+  workflow_dispatch:
+    inputs:
+      old_apk_path:
+        description: "旧版本 APK 仓库路径（默认 input/old.apk）"
+        required: false
+        default: "input/old.apk"
+      new_apk_path:
+        description: "新版本 APK 仓库路径（默认 input/new.apk）"
+        required: false
+        default: "input/new.apk"
+      old_apk_url:
+        description: "旧版本 APK 下载链接（可选，填了则优先用链接）"
+        required: false
+      new_apk_url:
+        description: "新版本 APK 下载链接（可选，填了则优先用链接）"
+        required: false
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Resolve APK inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _apks
+
+          OLD_PATH="${{ github.event.inputs.old_apk_path }}"
+          NEW_PATH="${{ github.event.inputs.new_apk_path }}"
+          OLD_URL="${{ github.event.inputs.old_apk_url }}"
+          NEW_URL="${{ github.event.inputs.new_apk_url }}"
+
+          if [[ -n "$OLD_URL" && -n "$NEW_URL" ]]; then
+            echo "Using URL mode"
+            curl -fL "$OLD_URL" -o _apks/old.apk
+            curl -fL "$NEW_URL" -o _apks/new.apk
+          else
+            echo "Using repository file mode"
+            test -f "$OLD_PATH" || (echo "Missing old apk: $OLD_PATH" && exit 1)
+            test -f "$NEW_PATH" || (echo "Missing new apk: $NEW_PATH" && exit 1)
+            cp "$OLD_PATH" _apks/old.apk
+            cp "$NEW_PATH" _apks/new.apk
+          fi
+
+      - name: Run apkdiff
+        run: |
+          python -m apkdiff.compare _apks/old.apk _apks/new.apk -o report.json
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: apkdiff-report
+          path: report.json

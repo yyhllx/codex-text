@@ -1,7 +1,12 @@
 
 from apkdiff.compare import compare_methods, normalize_class_name, parse_method_descriptor
 
+
+
+from apkdiff.compare import compare_methods, normalize_class_name, parse_method_descriptor
+
 from apkdiff.compare import compare_methods, parse_method_descriptor
+
 
 
 
@@ -12,7 +17,11 @@ def test_parse_method_descriptor_with_object_and_primitive() -> None:
 
 
 def test_parse_method_descriptor_with_arrays() -> None:
+
+    params, ret = parse_method_descriptor("([[I[Ljava/lang/String;)V")
+
     params, ret = parse_method_descriptor("([I[Ljava/lang/String;)V")
+
     assert params == ["int[][]", "java.lang.String[]"]
     assert ret == "void"
 
@@ -37,5 +46,11 @@ def test_compare_methods_detects_return_change() -> None:
 def test_normalize_class_name_descriptor() -> None:
     assert normalize_class_name("Lcom/example/URL;") == "com.example.URL"
     assert normalize_class_name("com/example/NoWrap") == "com.example.NoWrap"
+
+
+def test_normalize_class_name_descriptor() -> None:
+    assert normalize_class_name("Lcom/example/URL;") == "com.example.URL"
+    assert normalize_class_name("com/example/NoWrap") == "com.example.NoWrap"
+
 
 

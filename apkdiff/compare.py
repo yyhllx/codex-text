@@ -4,6 +4,10 @@ import argparse
 
 import hashlib
 
+
+import hashlib
+
+
 import json
 import re
 import zipfile
@@ -104,10 +108,20 @@ def _collect_urls(strings: Iterable[str]) -> List[str]:
     for s in strings:
         found.extend(URL_PATTERN.findall(s))
     return sorted(set(found))
+
+
+
+
+
 def normalize_class_name(raw_name: str) -> str:
     if raw_name.startswith("L") and raw_name.endswith(";"):
         return raw_name[1:-1].replace("/", ".")
     return raw_name.replace("/", ".")
+
+
+
+
+
 def build_snapshot(apk_path: Path) -> ApkSnapshot:
     apk = APK(str(apk_path))
 
@@ -123,7 +137,10 @@ def build_snapshot(apk_path: Path) -> ApkSnapshot:
         for cls in dex.get_classes():
             class_name = normalize_class_name(cls.get_name())
 
+
+
             class_name = cls.get_name().strip("L;").replace("/", ".")
+
 
             class_names.add(class_name)
             for method in cls.get_methods():
@@ -139,6 +156,9 @@ def build_snapshot(apk_path: Path) -> ApkSnapshot:
 
     return ApkSnapshot(
         file_name=apk_path.name,
+
+        sha256=hashlib.sha256(apk_path.read_bytes()).hexdigest(),
+
 
         sha256=hashlib.sha256(apk_path.read_bytes()).hexdigest(),
 

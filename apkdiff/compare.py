@@ -1,7 +1,13 @@
 from __future__ import annotations
 
 import argparse
+
 import hashlib
+
+
+import hashlib
+
+
 import json
 import re
 import zipfile
@@ -104,10 +110,16 @@ def _collect_urls(strings: Iterable[str]) -> List[str]:
     return sorted(set(found))
 
 
+
+
+
 def normalize_class_name(raw_name: str) -> str:
     if raw_name.startswith("L") and raw_name.endswith(";"):
         return raw_name[1:-1].replace("/", ".")
     return raw_name.replace("/", ".")
+
+
+
 
 
 def build_snapshot(apk_path: Path) -> ApkSnapshot:
@@ -124,6 +136,12 @@ def build_snapshot(apk_path: Path) -> ApkSnapshot:
         dex = DEX(dex_bytes)
         for cls in dex.get_classes():
             class_name = normalize_class_name(cls.get_name())
+
+
+
+            class_name = cls.get_name().strip("L;").replace("/", ".")
+
+
             class_names.add(class_name)
             for method in cls.get_methods():
                 params, ret = parse_method_descriptor(method.get_descriptor())
@@ -138,7 +156,14 @@ def build_snapshot(apk_path: Path) -> ApkSnapshot:
 
     return ApkSnapshot(
         file_name=apk_path.name,
+
         sha256=hashlib.sha256(apk_path.read_bytes()).hexdigest(),
+
+
+        sha256=hashlib.sha256(apk_path.read_bytes()).hexdigest(),
+
+        sha256=apk.get_file_hash(),
+
         package_name=apk.get_package() or "",
         version_name=apk.get_androidversion_name() or "",
         version_code=str(apk.get_androidversion_code() or ""),

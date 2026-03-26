@@ -30,6 +30,7 @@ pip install -r requirements.txt
 python -m apkdiff.compare old.apk new.apk -o report.json
 ```
 
+
 ## 手机/云端一键跑（GitHub Actions）
 
 仓库内已提供工作流：`.github/workflows/apkdiff.yml`。  
@@ -51,6 +52,8 @@ python -m apkdiff.compare old.apk new.apk -o report.json
 - `new_apk_url`
 
 工作流会优先按链接下载并对比。
+
+
 
 执行后会生成 `report.json`，包含：
 
